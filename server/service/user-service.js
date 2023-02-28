@@ -42,7 +42,7 @@ class UserService {
         }
     }
 
-    async refreh(refreshToken) {
+    async refresh(refreshToken) {
         if (!refreshToken) {
             throw ApiError.UnautorizatedError();
         }
