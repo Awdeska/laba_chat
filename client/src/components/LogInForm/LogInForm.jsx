@@ -1,7 +1,8 @@
 import React, {useContext, useState} from "react";
-import InputField from "./InputField";
+import InputField from "../Items/InputField";
 import s from "./LoginForm.module.css"
 import {Context} from "../../index";
+import Button from "../Items/Button";
 
 
 const LogInForm = ({ onSubmit }) => {
@@ -22,9 +23,8 @@ const LogInForm = ({ onSubmit }) => {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <button onClick={() => store.registration(nickname, password)} className={s.btn}>
-            Login
-        </button>
+        <Button label={'Registration'} onClick={() => store.registration(nickname, password)}/>
+          <Button label={'Login'} onClick={() => store.login(nickname, password)}/>
       </form>
     );
   };
