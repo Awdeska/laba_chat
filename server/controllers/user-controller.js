@@ -23,14 +23,6 @@ class UserController {
         }
     }
 
-    async logout(req, res, next) {
-        try {
-            
-        } catch (error) {
-            next(error);
-        }
-    }
-
     async refresh(req, res, next) {
         try {
             const {refreshToken} = req.cookies;
