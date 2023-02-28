@@ -5,7 +5,7 @@ import {Context} from "../../index";
 import Button from "../Items/Button";
 
 
-const LogInForm = ({ onSubmit }) => {
+const LogInForm = () => {
     const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
     const {store} = useContext(Context)

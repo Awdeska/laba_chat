@@ -2,7 +2,7 @@ import s from "./Button.module.css"
 
 const Button = ({label, onClick}) => {
     return (
-        <button onClick={onClick} className={s.btn}>{label}</button>
+        <button type='button' onClick={onClick} className={s.btn}>{label}</button>
     );
 }
 
