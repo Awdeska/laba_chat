@@ -7,15 +7,22 @@ const Chat = () => {
 
     useEffect(() => {
         // Получение сообщений из сервера
-        fetch('/api/messages')
+        fetch('/api/messages', {
+            headers: {
+                Accept: 'application/json',
+            },
+        })
             .then((response) => response.json())
             .then((data) => setMessages(data))
             .catch((error) => console.error(error));
     }, []);
 
+
     const handleSendMessage = (event) => {
         event.preventDefault();
-
+        if (!newMessage) {
+            return;
+        }
         // Отправка нового сообщения на сервер
         fetch('/api/messages', {
             method: 'POST',
@@ -27,7 +34,6 @@ const Chat = () => {
             .then((response) => response.json())
             .then((data) => setMessages([...messages, data]))
             .catch((error) => console.error(error));
-
         setNewMessage('');
     };
 

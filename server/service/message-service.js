@@ -7,7 +7,6 @@ module.exports = {
       return messages;
     } catch (err) {
       console.error(err);
-      throw err;
     }
   },
 
@@ -18,7 +17,6 @@ module.exports = {
       return savedMessage;
     } catch (err) {
       console.error(err);
-      throw err;
     }
   },
 };
