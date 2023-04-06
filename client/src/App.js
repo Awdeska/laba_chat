@@ -1,27 +1,40 @@
-import './App.css';
-import Header from './components/Header/Header';
-import LogInForm from './components/LogInForm/LogInForm';
-import {useEffect} from "react";
+import React, {useEffect, useState} from 'react';
+import { BrowserRouter, Route, Navigate, Routes } from 'react-router-dom';
+import ChatPage from "./pages/ChatPage";
+import RegistrationPage from "./pages/RegistrationPage";
 import {store} from "./index";
 
-
-function App() {
-    useEffect(() => {
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    async function handleCheckAuth() {
         if (localStorage.getItem('token')) {
-            store.checkAuth()
+            await store.checkAuth();
+            if (store.isAuthorized) {
+                setIsAuthenticated(true);
+            }
         }
-    }, [])
-
-    if (store.isLoading) {
-        return <div>Загрузка...</div>
     }
+    useEffect(() => {
+        handleCheckAuth();
+    }, []);
 
     return (
-        <div className='body'>
-            <Header/>
-            <LogInForm/>
-        </div>
+        <BrowserRouter>
+            <div className="app">
+                <Routes>
+                    <Route exact path="/" element=
+                        {isAuthenticated ? (
+                            <Navigate to="/chat" />
+                        ) : (
+                            <RegistrationPage/>
+                        )}>
+                    </Route>
+                    <Route exact path="/chat" element={isAuthenticated ? <ChatPage /> : <Navigate to="/" />}>
+                    </Route>
+                </Routes>
+            </div>
+        </BrowserRouter>
     );
-}
+};
 
 export default App;

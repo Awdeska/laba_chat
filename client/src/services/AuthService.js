@@ -1,4 +1,5 @@
-import $api from "../http";
+import $api, {API_URL} from "../http";
+import axios from "axios";
 
 export default class AuthService {
     static async login(nickname, password){
@@ -6,7 +7,7 @@ export default class AuthService {
             const items = response.data;
             return items;
         })
-        .catch((err) => console.log(err));;
+            .catch((err) => console.log(err));;
     }
 
     static async registration(nickname, password) {
@@ -14,7 +15,14 @@ export default class AuthService {
             const items = response.data;
             return items;
         })
-        .catch((err) => console.log(err));;
+            .catch((err) => console.log(err));;
+    }
+
+    static async refresh() {
+        return axios.get(`${API_URL}/refresh`, {withCredentials: true}).then(response => {
+            const items = response.data;
+            return items;
+        }).catch((err) => console.log(err));
     }
 }
 
