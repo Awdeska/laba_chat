@@ -1,8 +1,8 @@
 const messageService = require('../service/message-service');
 
-class Server {
+class Socket {
 
-    async startServer(io) {
+    async connectSocket(io) {
 
         io.on('connection', (socket) => {
             console.log(`User ${socket.id} connected`);
@@ -31,4 +31,4 @@ class Server {
     }
 }
 
-module.exports = new Server();
+module.exports = new Socket();

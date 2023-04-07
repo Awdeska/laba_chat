@@ -12,7 +12,7 @@ const Chat = ({ username }) => {
 
     useEffect(() => {
         const serverUrl = 'http://localhost:5000';
-        const socket = io(serverUrl);
+        const socket = io.connect(serverUrl);
 
         socket.on('connect', () => {
             console.log('Connected to server!');
@@ -25,7 +25,6 @@ const Chat = ({ username }) => {
         socket.on('all-messages', (messages) => {
             setMessages(messages);
         });
-
         setSocket(socket);
 
         return () => {
