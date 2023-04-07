@@ -11,11 +11,12 @@ module.exports = {
   },
 
   async addMessage(username, message) {
-    const savedMessage = await messageModel.create({ username, message });
-    try { 
-      return savedMessage.save();
+    const newMessage = new messageModel({username, message});
+    try {
+      const savedMessage = await newMessage.save();
+      return savedMessage;
     } catch (err) {
       console.error(err);
     }
-  },
+  }
 };

@@ -11,12 +11,25 @@ const Chat = ({ username }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        const serverUrl = process.env.REACT_APP_SERVER_URL;
-        const newSocket = io(serverUrl);
-        setSocket(newSocket);
+        const serverUrl = 'http://localhost:5000';
+        const socket = io(serverUrl);
+
+        socket.on('connect', () => {
+            console.log('Connected to server!');
+        });
+
+        socket.on('chat-message', (message) => {
+            setMessages((messages) => [...messages, message]);
+        });
+
+        socket.on('all-messages', (messages) => {
+            setMessages(messages);
+        });
+
+        setSocket(socket);
 
         return () => {
-            newSocket.close()
+            socket.disconnect();
         };
     }, []);
 
@@ -35,7 +48,7 @@ const Chat = ({ username }) => {
             timestamp: new Date(),
         };
         socket.emit('chat-message', message);
-        console.log(username)
+        console.log(socket)
         setCurrentMessage('');
     };
 
