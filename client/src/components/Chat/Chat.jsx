@@ -56,7 +56,6 @@ const Chat = ({ username }) => {
             <div className="chat-messages">
                 {messages.map((message, index) => {
                     const isCurrentUser = message.username === username;
-                    console.log(username)
                     const messageClass = isCurrentUser
                         ? 'chat-message chat-message-current-user'
                         : 'chat-message';
