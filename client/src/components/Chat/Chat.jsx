@@ -40,32 +40,29 @@ const Chat = ({ username }) => {
 
     const sendMessage = (event) => {
         event.preventDefault();
-        if (currentMessage.trim() === '') return;
-        const message = {
-            username: "123",
-            message: currentMessage.trim(),
-        };
-        socket.emit('chat-message', message);
+        if (currentMessage.trim() === '') return
+        const message = currentMessage.trim();
+        socket.emit("chat-message", { username, message });
         setCurrentMessage('');
+        setMessages((prevMessages) => [...prevMessages, { username, message }]);
     };
 
     const formatDate = (date) => {
-        return moment(date).format('HH:mm:ss, MMMM Do YYYY');
+        return moment(date).format('D MMMM HH:mm');
     };
 
     return (
         <div className="chat">
             <div className="chat-messages">
                 {messages.map((message, index) => {
-                    console.log(message.username)
                     const isCurrentUser = message.username === username;
+                    console.log(username)
                     const messageClass = isCurrentUser
                         ? 'chat-message chat-message-current-user'
                         : 'chat-message';
                     const messageStyle = isCurrentUser ? { textAlign: 'right' } : {};
                     return (
                         <div className={messageClass} key={index}>
-                            <p className="chat-message-username">{message.username}</p>
                             <p className="chat-message-timestamp">{formatDate(message.timestamp)}</p>
                             <div className="chat-message-content" style={messageStyle}>
                                 <Linkify>{message.message}</Linkify>
