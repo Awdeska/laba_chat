@@ -43,6 +43,7 @@ const Chat = ({ username }) => {
         if (currentMessage.trim() === '') return
         const message = currentMessage.trim();
         socket.emit("chat-message", { username, message });
+        console.log(messages)
         setCurrentMessage('');
         setMessages((prevMessages) => [...prevMessages, { username, message }]);
     };

@@ -4,7 +4,7 @@ class Socket {
 
     async connectSocket(io) {
 
-        io.on('connect', (socket) => {
+        io.on('connection', (socket) => {
             messageService.getAllMessages()
                 .then((messages) => {
                     socket.emit('all-messages', messages);

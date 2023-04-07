@@ -1,4 +1,5 @@
 const messageModel = require('../models/message-model');
+const ApiError = require("../exceptions/api-error");
 
 module.exports = {
   async getAllMessages() {
@@ -6,14 +7,18 @@ module.exports = {
       const messages = await messageModel.find();
       return messages;
     } catch (err) {
-      console.error(err);
+      throw ApiError.BadRequest('Что-то пошло не так')
     }
   },
 
   async addMessage(_user, message) {
     const userId = _user._id;
-    console.log(userId)
-    const newMessage = await messageModel.create({ userId, message, createdAt: Date.now() });
-    return newMessage;
+    const newMessage = new messageModel({ userId, message, createdAt: Date.now() });
+    try {
+      return newMessage.save();
+    }
+    catch (err) {
+      throw ApiError.BadRequest('Что-то пошло не так')
+    }
   }
 };
