@@ -11,8 +11,7 @@ const Chat = ({ username }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        const serverUrl = 'http://localhost:5000';
-        const socket = io.connect(serverUrl);
+        const socket = io();
 
         socket.on('connect', () => {
             console.log('Connected to server!');
@@ -25,6 +24,7 @@ const Chat = ({ username }) => {
         socket.on('all-messages', (messages) => {
             setMessages(messages);
         });
+
         setSocket(socket);
 
         return () => {
@@ -42,12 +42,10 @@ const Chat = ({ username }) => {
         event.preventDefault();
         if (currentMessage.trim() === '') return;
         const message = {
-            username,
+            username: "123",
             message: currentMessage.trim(),
-            timestamp: new Date(),
         };
         socket.emit('chat-message', message);
-        console.log(socket)
         setCurrentMessage('');
     };
 

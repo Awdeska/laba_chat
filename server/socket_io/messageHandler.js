@@ -5,8 +5,6 @@ class Socket {
     async connectSocket(io) {
 
         io.on('connection', (socket) => {
-            console.log(`User ${socket.id} connected`);
-
             // Send all messages to the new user
             messageService.getAllMessages()
                 .then((messages) => {
