@@ -3,7 +3,7 @@ const messageModel = require('../models/message-model');
 module.exports = {
   async getAllMessages() {
     try {
-      const messages = await messageModel.find().sort({ createdAt: 'asc' });
+      const messages = await messageModel.find();
       return messages;
     } catch (err) {
       console.error(err);

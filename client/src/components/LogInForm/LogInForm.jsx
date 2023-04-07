@@ -15,7 +15,6 @@ const LogInForm = () => {
 
     const handleCheckUser = async () => {
         if (await store.login(nickname, password)) {
-            console.log("das")
             setIsUserRegistered(true);
         }
     };

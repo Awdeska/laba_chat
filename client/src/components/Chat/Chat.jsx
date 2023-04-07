@@ -1,60 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import './Chat.css';
+import React, { useState, useEffect, useRef } from 'react';
+import socketIOClient from 'socket.io-client';
+import "./Chat.css"
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [username, setUsername] = useState('');
+
+    const socketRef = useRef();
 
     useEffect(() => {
-        // Получение сообщений из сервера
-        fetch('/api/messages', {
-            headers: {
-                Accept: 'application/json',
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => setMessages(data))
-            .catch((error) => console.error(error));
-    }, []);
+        // Подключаемся к серверу по websocket
+        socketRef.current = socketIOClient('http://localhost:3000');
 
+        // Получаем все сообщения при подключении
+        socketRef.current.on('all-messages', (data) => {
+            setMessages(data);
+        });
 
-    const handleSendMessage = (event) => {
+        // Получаем новое сообщение
+        socketRef.current.on('chat-message', (data) => {
+            setMessages([...messages, data]);
+        });
+
+        return () => {
+            // Отключаемся от сервера при размонтировании компонента
+            socketRef.current.disconnect();
+        };
+    }, [messages]);
+
+    const handleSubmit = (event) => {
         event.preventDefault();
-        if (!newMessage) {
-            return;
-        }
-        // Отправка нового сообщения на сервер
-        fetch('/api/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ author: 'User', text: newMessage }),
-        })
-            .then((response) => response.json())
-            .then((data) => setMessages([...messages, data]))
-            .catch((error) => console.error(error));
+        // Отправляем сообщение на сервер
+        socketRef.current.emit('chat-message', { username, message: newMessage });
         setNewMessage('');
     };
 
     return (
         <div className="chat-container">
-            <div className="chat-messages">
-                {messages.map((message, index) => (
-                    <div key={index} className="chat-message">
-                        <div className="chat-message-author">{message.author}</div>
-                        <div className="chat-message-text">{message.text}</div>
+            <div className="message-container">
+                {messages.map((message) => (
+                    <div key={message._id} className={message.username === username ? 'message right' : 'message left'}>
+                        <div className="message-text">{message.message}</div>
+                        <div className="message-date">{new Date(message.createdAt).toLocaleString()}</div>
                     </div>
                 ))}
             </div>
-            <form onSubmit={handleSendMessage} className="chat-input">
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(event) => setNewMessage(event.target.value)}
-                    placeholder="Введите сообщение"
-                />
-                <button type="submit">Отправить</button>
+            <form onSubmit={handleSubmit}>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your username" />
+                <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Enter your message" />
+                <button type="submit">Send</button>
             </form>
         </div>
     );

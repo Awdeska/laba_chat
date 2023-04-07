@@ -1,14 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require("http");
+const socketIo = require('socket.io');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const router = require('./router/index');
 const errorMiddleware = require('./middlewares/error-middleware');
+const { startServer } = require('./socket_io/messageHandler');
 
 const PORT = process.env.PORT || 5000;
 const app = express()
+const server = http.createServer(app);
+const io = socketIo(server);
 
+startServer(io);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
