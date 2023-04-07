@@ -12,8 +12,8 @@ module.exports = {
 
   async addMessage(username, message) {
     const savedMessage = await messageModel.create({ username, message });
-    try {
-      return savedMessage;
+    try { 
+      return savedMessage.save();
     } catch (err) {
       console.error(err);
     }

@@ -12,25 +12,11 @@ const Chat = ({ username }) => {
 
     useEffect(() => {
         const serverUrl = process.env.REACT_APP_SERVER_URL;
-        const socket = io(serverUrl);
-        console.log("dsa")
-
-        socket.on('connect', () => {
-            console.log('Connected to server!');
-        });
-
-        socket.on('chat-message', (message) => {
-            setMessages((messages) => [...messages, message]);
-        });
-
-        socket.on('all-messages', (messages) => {
-            setMessages(messages);
-        });
-
-        setSocket(socket);
+        const newSocket = io(serverUrl);
+        setSocket(newSocket);
 
         return () => {
-            socket.disconnect();
+            newSocket.close()
         };
     }, []);
 
