@@ -16,7 +16,7 @@ const App = () => {
     }
     useEffect(() => {
         handleCheckAuth();
-    }, []);
+    }, [handleCheckAuth]);
 
     return (
         <BrowserRouter>
@@ -29,7 +29,7 @@ const App = () => {
                             <RegistrationPage/>
                         )}>
                     </Route>
-                    <Route exact path="/chat" element={isAuthenticated ? <ChatPage /> : <Navigate to="/" />}>
+                    <Route exact path="/chat" element={isAuthenticated ? <ChatPage username={store.user}/> : <Navigate to="/" />}>
                     </Route>
                 </Routes>
             </div>

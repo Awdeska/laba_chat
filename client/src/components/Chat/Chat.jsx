@@ -1,55 +1,95 @@
 import React, { useState, useEffect, useRef } from 'react';
-import socketIOClient from 'socket.io-client';
-import "./Chat.css"
+import io from 'socket.io-client';
+import moment from 'moment';
+import Linkify from 'react-linkify';
+import './Chat.css'
 
-const Chat = () => {
+const Chat = ({ username }) => {
     const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
-    const [username, setUsername] = useState('');
-
-    const socketRef = useRef();
+    const [currentMessage, setCurrentMessage] = useState('');
+    const [socket, setSocket] = useState(null);
+    const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        // Подключаемся к серверу по websocket
-        socketRef.current = socketIOClient('http://localhost:3000');
+        const serverUrl = process.env.REACT_APP_SERVER_URL;
+        const socket = io(serverUrl);
+        console.log("dsa")
 
-        // Получаем все сообщения при подключении
-        socketRef.current.on('all-messages', (data) => {
-            setMessages(data);
+        socket.on('connect', () => {
+            console.log('Connected to server!');
         });
 
-        // Получаем новое сообщение
-        socketRef.current.on('chat-message', (data) => {
-            setMessages([...messages, data]);
+        socket.on('chat-message', (message) => {
+            setMessages((messages) => [...messages, message]);
         });
+
+        socket.on('all-messages', (messages) => {
+            setMessages(messages);
+        });
+
+        setSocket(socket);
 
         return () => {
-            // Отключаемся от сервера при размонтировании компонента
-            socketRef.current.disconnect();
+            socket.disconnect();
         };
+    }, []);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     }, [messages]);
 
-    const handleSubmit = (event) => {
+    const sendMessage = (event) => {
         event.preventDefault();
-        // Отправляем сообщение на сервер
-        socketRef.current.emit('chat-message', { username, message: newMessage });
-        setNewMessage('');
+        if (currentMessage.trim() === '') return;
+        const message = {
+            username,
+            message: currentMessage.trim(),
+            timestamp: new Date(),
+        };
+        socket.emit('chat-message', message);
+        console.log(username)
+        setCurrentMessage('');
+    };
+
+    const formatDate = (date) => {
+        return moment(date).format('HH:mm:ss, MMMM Do YYYY');
     };
 
     return (
-        <div className="chat-container">
-            <div className="message-container">
-                {messages.map((message) => (
-                    <div key={message._id} className={message.username === username ? 'message right' : 'message left'}>
-                        <div className="message-text">{message.message}</div>
-                        <div className="message-date">{new Date(message.createdAt).toLocaleString()}</div>
-                    </div>
-                ))}
+        <div className="chat">
+            <div className="chat-messages">
+                {messages.map((message, index) => {
+                    console.log(message.username)
+                    const isCurrentUser = message.username === username;
+                    const messageClass = isCurrentUser
+                        ? 'chat-message chat-message-current-user'
+                        : 'chat-message';
+                    const messageStyle = isCurrentUser ? { textAlign: 'right' } : {};
+                    return (
+                        <div className={messageClass} key={index}>
+                            <p className="chat-message-username">{message.username}</p>
+                            <p className="chat-message-timestamp">{formatDate(message.timestamp)}</p>
+                            <div className="chat-message-content" style={messageStyle}>
+                                <Linkify>{message.message}</Linkify>
+                            </div>
+                        </div>
+                    );
+                })}
+                <div ref={messagesEndRef}></div>
             </div>
-            <form onSubmit={handleSubmit}>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your username" />
-                <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Enter your message" />
-                <button type="submit">Send</button>
+            <form className="chat-form" onSubmit={sendMessage}>
+                <input
+                    className="chat-input"
+                    type="text"
+                    placeholder="Type a message"
+                    value={currentMessage}
+                    onChange={(event) => setCurrentMessage(event.target.value)}
+                />
+                <button className="chat-send-button" type="submit">
+                    Send
+                </button>
             </form>
         </div>
     );

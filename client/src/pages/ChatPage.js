@@ -1,8 +1,8 @@
 import Chat from "../components/Chat/Chat";
 
-const ChatPage = () => {
+const ChatPage = (username) => {
     return (
-        <Chat/>
+        <Chat username={username}/>
     );
 }
 
